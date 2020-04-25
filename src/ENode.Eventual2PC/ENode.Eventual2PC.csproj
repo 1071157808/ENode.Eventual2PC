@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/berkaroad/ENode.Eventual2PC</PackageProjectUrl>
+    <Authors>Jerry Bai</Authors>
+    <PackageId>ENode.Eventual2PC</PackageId>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <Title>ENode.Eventual2PC</Title>
+    <Description>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Description>
+    <PackageTags>enode 2pc eventual transaction processmanager saga</PackageTags>
+    <PackageReleaseNotes>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。
+    </PackageReleaseNotes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ENode" Version="2.9.6" />
+    <PackageReference Include="Eventual2PC" Version="1.0.0" />
+  </ItemGroup>
+
+</Project>
