@@ -12,7 +12,7 @@ namespace ENode.Eventual2PC.Events
         : _Eventual2PCEvents.ITransactionParticipantPreCommitFailed<TParticipant, TTransactionPreparation>
         , IDomainException
         where TParticipant : class, ITransactionParticipant
-        where TTransactionPreparation : class, ITransactionPreparation
+        where TTransactionPreparation : class, global::Eventual2PC.ITransactionPreparation
     {
     }
 
@@ -23,7 +23,7 @@ namespace ENode.Eventual2PC.Events
     public interface ITransactionParticipantPreCommitDomainException<TParticipant>
         : _Eventual2PCEvents.ITransactionParticipantPreCommitFailed<TParticipant>
         , IDomainException
-        where TParticipant : class, ITransactionParticipant
+        where TParticipant : class, global::Eventual2PC.ITransactionParticipant
     {      
     }
 }

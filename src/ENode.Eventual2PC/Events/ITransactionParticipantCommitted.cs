@@ -13,7 +13,7 @@ namespace ENode.Eventual2PC.Events
         : _Eventual2PCEvents.ITransactionParticipantCommitted<TParticipant, TTransactionPreparation>
         , IDomainEvent<TAggregateRootId>
         where TParticipant : class, ITransactionParticipant
-        where TTransactionPreparation : class, ITransactionPreparation
+        where TTransactionPreparation : class, global::Eventual2PC.ITransactionPreparation
     {
     }
 }

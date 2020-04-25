@@ -303,7 +303,6 @@ namespace ENode.Eventual2PC
         /// <param name="_preCommitSuccessTransactionParticipants"></param>
         protected abstract Events.ITransactionInitiatorAllParticipantPreCommitSucceed<TTransactionInitiator, TAggregateRootId> CreateAllParticipantPreCommitSucceedEvent(string transactionId, byte transactionType, List<global::Eventual2PC.TransactionParticipantInfo> _preCommitSuccessTransactionParticipants);
 
-
         /// <summary>
         /// Create AnyParticipantPreCommitFailed event
         /// </summary>
@@ -336,7 +335,6 @@ namespace ENode.Eventual2PC
         /// <param name="isCommitSuccess"></param>
         protected abstract Events.ITransactionInitiatorTransactionCompleted<TTransactionInitiator, TAggregateRootId> CreateTransactionCompletedEvent(string transactionId, byte transactionType, bool isCommitSuccess);
         
-
         /// <summary>
         /// Handle TransactionStarted event
         /// </summary>
