@@ -1,31 +1,29 @@
-﻿using ENode.Eventing;
+﻿using ENode.Domain;
 using _Eventual2PCEvents = Eventual2PC.Events;
 
 namespace ENode.Eventual2PC.Events
 {
     /// <summary>
-    /// 事务参与方预提交失败事件
+    /// 事务参与方预提交失败领域异常
     /// </summary>
     /// <typeparam name="TParticipant">事务参与方</typeparam>
-    /// <typeparam name="TAggregateRootId">聚合根ID</typeparam>
     /// <typeparam name="TTransactionPreparation">事务准备</typeparam>
-    public interface ITransactionParticipantPreCommitFailed<TParticipant, TAggregateRootId, TTransactionPreparation>
+    public interface ITransactionParticipantPreCommitDomainException<TParticipant, TTransactionPreparation>
         : _Eventual2PCEvents.ITransactionParticipantPreCommitFailed<TParticipant, TTransactionPreparation>
-        , IDomainEvent<TAggregateRootId>
+        , IDomainException
         where TParticipant : class, ITransactionParticipant
         where TTransactionPreparation : class, ITransactionPreparation
     {
     }
 
     /// <summary>
-    /// 事务参与方预提交失败事件
+    /// 事务参与方预提交失败领域异常
     /// </summary>
     /// <typeparam name="TParticipant">事务参与方</typeparam>
-    /// <typeparam name="TAggregateRootId">聚合根ID</typeparam>
-    public interface ITransactionParticipantPreCommitFailed<TParticipant, TAggregateRootId>
+    public interface ITransactionParticipantPreCommitDomainException<TParticipant>
         : _Eventual2PCEvents.ITransactionParticipantPreCommitFailed<TParticipant>
-        , IDomainEvent<TAggregateRootId>
+        , IDomainException
         where TParticipant : class, ITransactionParticipant
-    {
+    {      
     }
 }

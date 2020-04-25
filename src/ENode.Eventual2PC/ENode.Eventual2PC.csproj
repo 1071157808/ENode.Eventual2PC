@@ -10,12 +10,12 @@
     <RepositoryUrl>https://github.com/berkaroad/ENode.Eventual2PC</RepositoryUrl>
     <Authors>Jerry Bai</Authors>
     <PackageId>ENode.Eventual2PC</PackageId>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <Title>ENode.Eventual2PC</Title>
     <Description>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Description>
     <PackageTags>enode 2pc eventual transaction processmanager saga</PackageTags>
-    <PackageReleaseNotes>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。
+    <PackageReleaseNotes>1）增加 `PreCommitFailed` 的领域异常接口 `ITransactionParticipantPreCommitDomainException`
     </PackageReleaseNotes>
   </PropertyGroup>
 

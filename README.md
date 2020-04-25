@@ -28,6 +28,10 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.0.1（2020/4/25）
+
+- 1）增加 `PreCommitFailed` 的领域异常接口 `ITransactionParticipantPreCommitDomainException`
+
 ## 1.0.0（2020/4/25）
 
 - 初始版本

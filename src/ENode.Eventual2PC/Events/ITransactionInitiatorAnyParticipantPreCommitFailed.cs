@@ -14,5 +14,5 @@ namespace ENode.Eventual2PC.Events
         where TInitiator : class, ITransactionInitiator
     {
 
-     }
+    }
 }
