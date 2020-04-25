@@ -28,6 +28,11 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.0.3
+
+- 1）修复 `TransactionInitiatorBase`
+
+
 ## 1.0.2
 
 - 1）取消自定义接口 `ITransactionPreparation`

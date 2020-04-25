@@ -10,11 +10,11 @@
     <RepositoryUrl>https://github.com/berkaroad/ENode.Eventual2PC</RepositoryUrl>
     <Authors>Jerry Bai</Authors>
     <PackageId>ENode.Eventual2PC</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Title>ENode.Eventual2PC</Title>
     <Description>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Description>
     <PackageTags>enode 2pc eventual transaction processmanager saga</PackageTags>
-    <PackageReleaseNotes>1）取消自定义接口 `ITransactionPreparation`
+    <PackageReleaseNotes>1）修复 `TransactionInitiatorBase`
     </PackageReleaseNotes>
   </PropertyGroup>
 

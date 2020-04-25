@@ -300,8 +300,8 @@ namespace ENode.Eventual2PC
         /// </summary>
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
-        /// <param name="_preCommitSuccessTransactionParticipants"></param>
-        protected abstract Events.ITransactionInitiatorAllParticipantPreCommitSucceed<TTransactionInitiator, TAggregateRootId> CreateAllParticipantPreCommitSucceedEvent(string transactionId, byte transactionType, List<global::Eventual2PC.TransactionParticipantInfo> _preCommitSuccessTransactionParticipants);
+        /// <param name="preCommitSuccessTransactionParticipants"></param>
+        protected abstract Events.ITransactionInitiatorAllParticipantPreCommitSucceed<TTransactionInitiator, TAggregateRootId> CreateAllParticipantPreCommitSucceedEvent(string transactionId, byte transactionType, IEnumerable<global::Eventual2PC.TransactionParticipantInfo> preCommitSuccessTransactionParticipants);
 
         /// <summary>
         /// Create AnyParticipantPreCommitFailed event
@@ -309,7 +309,7 @@ namespace ENode.Eventual2PC
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
         /// <param name="preCommitSuccessTransactionParticipants"></param>
-        protected abstract Events.ITransactionInitiatorAnyParticipantPreCommitFailed<TTransactionInitiator, TAggregateRootId> CreateAnyParticipantPreCommitFailedEvent(string transactionId, byte transactionType, List<global::Eventual2PC.TransactionParticipantInfo> preCommitSuccessTransactionParticipants);
+        protected abstract Events.ITransactionInitiatorAnyParticipantPreCommitFailed<TTransactionInitiator, TAggregateRootId> CreateAnyParticipantPreCommitFailedEvent(string transactionId, byte transactionType, IEnumerable<global::Eventual2PC.TransactionParticipantInfo> preCommitSuccessTransactionParticipants);
 
         /// <summary>
         /// Create CommittedParticipantAdded event
@@ -358,20 +358,42 @@ namespace ENode.Eventual2PC
         /// Handle PreCommitSuccessParticipantAdded event
         /// </summary>
         /// <param name="transactionId"></param>
-        protected void HandlePreCommitSuccessParticipantAddedEvent(string transactionId)
+        /// <param name="transactionParticipant"></param>
+        protected void HandlePreCommitSuccessParticipantAddedEvent(string transactionId, global::Eventual2PC.TransactionParticipantInfo transactionParticipant)
         {
             _transactionId = transactionId;
+            _preCommitSuccessTransactionParticipants.Add(transactionParticipant);
         }
 
         /// <summary>
         /// Handle PreCommitFailParticipantAdded event
         /// </summary>
         /// <param name="transactionId"></param>
-        protected void HandlePreCommitFailParticipantAddedEvent(string transactionId)
+        /// <param name="transactionParticipant"></param>
+        protected void HandlePreCommitFailParticipantAddedEvent(string transactionId, global::Eventual2PC.TransactionParticipantInfo transactionParticipant)
         {
             _transactionId = transactionId;
+            _preCommitFailTransactionParticipants.Add(transactionParticipant);
         }
 
+        /// <summary>
+        /// Handle CommittedParticipantAdded event
+        /// </summary>
+        /// <param name="transactionParticipant"></param>
+        protected void HandleCommittedParticipantAddedEvent(global::Eventual2PC.TransactionParticipantInfo transactionParticipant)
+        {
+            _committedTransactionParticipants.Add(transactionParticipant);
+        }
+
+        /// <summary>
+        /// Handle RolledbackParticipantAdded event
+        /// </summary>
+        /// <param name="transactionParticipant"></param>
+        protected void HandleRolledbackParticipantAddedEvent(global::Eventual2PC.TransactionParticipantInfo transactionParticipant)
+        {
+            _rolledbackTransactionParticipants.Add(transactionParticipant);
+        }
+       
         /// <summary>
         /// Handle TransactionCompleted event
         /// </summary>
