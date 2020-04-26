@@ -30,11 +30,11 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 1.0.5
 
-1）修复 `TransactionInitiatorBase`、 `TransactionParticipantBase`内部处理
+- 1）修复 `TransactionInitiatorBase`、 `TransactionParticipantBase`内部处理
 
 ## 1.0.4
 
-1）修复 `TransactionParticipantBase`内部处理
+- 1）修复 `TransactionParticipantBase`内部处理
 
 
 ## 1.0.3
