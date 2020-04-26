@@ -80,11 +80,12 @@ namespace ENode.Eventual2PC
         /// <returns></returns>
         protected bool IsAllCommittedAndRolledbackParticipantAdded()
         {
-            return _allTransactionParticipants.Count == _committedTransactionParticipants.Count + _rolledbackTransactionParticipants.Count;
+            return _allTransactionParticipants.Count == _committedTransactionParticipants.Count
+                || _preCommitSuccessTransactionParticipants.Count == _rolledbackTransactionParticipants.Count;
         }
 
         /// <summary>
-        /// 添加预提交成功的参与者
+        /// 添加预提交成功的参与者（依次发布 PreCommitSuccessParticipantAdded 、 AllParticipantPreCommitSucceed（或 AnyParticipantPreCommitFailed） 事件）
         /// </summary>
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
@@ -105,23 +106,23 @@ namespace ENode.Eventual2PC
             }
             if (_transactionType == 0)
             {
-                throw new ApplicationException($"Not in transaction, couldn't AddPreCommitSuccessParticipant.");
+                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddPreCommitSuccessParticipant command.");
             }
             if (transactionType != _transactionType)
             {
-                throw new ApplicationException($"Transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
             }
             if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
             {
-                throw new ApplicationException($"Transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
             }
-            if (_preCommitSuccessTransactionParticipants.Count > 0)
+            if (_preCommitSuccessTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitSuccessTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitSuccessTransactionParticipants);
+                return;
             }
-            if (_preCommitFailTransactionParticipants.Count > 0)
+            if (_preCommitFailTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitFailTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitFailTransactionParticipants);
+                return;
             }
 
             ApplyEvent(CreatePreCommitSuccessParticipantAddedEvent(transactionId, transactionType, participantInfo));
@@ -130,10 +131,15 @@ namespace ENode.Eventual2PC
                 // 所有参与者的预提交都已成功处理
                 ApplyEvent(CreateAllParticipantPreCommitSucceedEvent(transactionId, transactionType, _preCommitSuccessTransactionParticipants));
             }
+            else if (IsAllPreCommitParticipantAdded())
+            {
+                // 所有预提交已添加
+                ApplyEvent(CreateAnyParticipantPreCommitFailedEvent(transactionId, transactionType, _preCommitSuccessTransactionParticipants));
+            }
         }
 
         /// <summary>
-        /// 添加预提交失败的参与者
+        /// 添加预提交失败的参与者（依次发布 PreCommitFailParticipantAdded 、 AnyParticipantPreCommitFailed 事件）
         /// </summary>
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
@@ -154,23 +160,23 @@ namespace ENode.Eventual2PC
             }
             if (_transactionType == 0)
             {
-                throw new ApplicationException($"Not in transaction, couldn't AddPreCommitSuccessParticipant.");
+                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddPreCommitFailedParticipant command.");
             }
             if (transactionType != _transactionType)
             {
-                throw new ApplicationException($"Transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
             }
             if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
             {
-                throw new ApplicationException($"Transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
             }
-            if (_preCommitSuccessTransactionParticipants.Count > 0)
+            if (_preCommitSuccessTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitSuccessTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitSuccessTransactionParticipants);
+                return;
             }
-            if (_preCommitFailTransactionParticipants.Count > 0)
+            if (_preCommitFailTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitFailTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitFailTransactionParticipants);
+                return;
             }
 
             ApplyEvent(CreatePreCommitFailParticipantAddedEvent(transactionId, transactionType, participantInfo));
@@ -182,7 +188,7 @@ namespace ENode.Eventual2PC
         }
 
         /// <summary>
-        /// 添加已提交的参与者
+        /// 添加已提交的参与者（依次发布 CommittedParticipantAdded 、 TransactionCompleted 事件）
         /// </summary>
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
@@ -203,23 +209,27 @@ namespace ENode.Eventual2PC
             }
             if (_transactionType == 0)
             {
-                throw new ApplicationException($"Not in transaction, couldn't AddRolledbackParticipant.");
+                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddCommittedParticipant command.");
             }
             if (transactionType != _transactionType)
             {
-                throw new ApplicationException($"Transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
             }
             if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
             {
-                throw new ApplicationException($"Transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
             }
-            if (_committedTransactionParticipants.Count > 0)
+            if (_committedTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_committedTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitSuccessTransactionParticipants);
+                return;
             }
-            if (_rolledbackTransactionParticipants.Count > 0)
+            if (_rolledbackTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_rolledbackTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitFailTransactionParticipants);
+                return;
+            }
+            if (!IsAllPreCommitParticipantAdded())
+            {
+                throw new ApplicationException("Initiator {Id} didn't received all PreCommit participant, couldn't execute AddCommittedParticipant command.");
             }
 
             ApplyEvent(CreateCommittedParticipantAddedEvent(transactionId, transactionType, participantInfo));
@@ -231,7 +241,7 @@ namespace ENode.Eventual2PC
         }
 
         /// <summary>
-        /// 添加已回滚的参与者
+        /// 添加已回滚的参与者（依次发布 RolledbackParticipantAdded 、 TransactionCompleted 事件）
         /// </summary>
         /// <param name="transactionId"></param>
         /// <param name="transactionType"></param>
@@ -252,23 +262,27 @@ namespace ENode.Eventual2PC
             }
             if (_transactionType == 0)
             {
-                throw new ApplicationException($"Not in transaction, couldn't AddRolledbackParticipant.");
+                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddRolledbackParticipant command.");
             }
             if (transactionType != _transactionType)
             {
-                throw new ApplicationException($"Transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
             }
             if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
             {
-                throw new ApplicationException($"Transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
             }
-            if (_committedTransactionParticipants.Count > 0)
+            if (_committedTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_committedTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitSuccessTransactionParticipants);
+                return;
             }
-            if (_rolledbackTransactionParticipants.Count > 0)
+            if (_rolledbackTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_rolledbackTransactionParticipants))
             {
-                participantInfo.ValidateParticipantMustNotExists(_preCommitFailTransactionParticipants);
+                return;
+            }
+            if (!IsAllPreCommitParticipantAdded())
+            {
+                throw new ApplicationException("Initiator {Id} didn't received all PreCommit participant, couldn't execute AddRolledbackParticipant command.");
             }
 
             ApplyEvent(CreateRolledbackParticipantAddedEvent(transactionId, transactionType, participantInfo));

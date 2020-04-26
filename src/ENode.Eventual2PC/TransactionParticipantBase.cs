@@ -107,7 +107,7 @@ namespace ENode.Eventual2PC
         protected IReadOnlyList<TTransactionPreparation> GetTransactionPreparationList<TTransactionPreparation>()
             where TTransactionPreparation : class, global::Eventual2PC.ITransactionPreparation
         {
-            return _transactionPreparations?.Values.Select(s => s as TTransactionPreparation).Where(w => w != null).ToList().AsReadOnly();
+            return _transactionPreparations == null ? new List<TTransactionPreparation>().AsReadOnly() : _transactionPreparations.Values.Select(s => s as TTransactionPreparation).Where(w => w != null).ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace ENode.Eventual2PC
         /// <returns></returns>
         protected IReadOnlyList<global::Eventual2PC.ITransactionPreparation> GetAllTransactionPreparations()
         {
-            return _transactionPreparations?.Values.ToList().AsReadOnly();
+            return _transactionPreparations == null ? new List<global::Eventual2PC.ITransactionPreparation>().AsReadOnly() : _transactionPreparations.Values.ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -132,14 +132,14 @@ namespace ENode.Eventual2PC
         }
 
         /// <summary>
-        /// 检查指定的事务准备类型，是否已存在（不同事务流程可能存在互斥，即不能同时存在）
+        /// 判断指定的事务准备类型，是否已存在（不同事务流程可能存在互斥，即不能同时存在）
         /// </summary>
         /// <typeparam name="TTransactionPreparation">具体的事务准备</typeparam>
         /// <returns></returns>
-        protected bool CheckSpecificTransactionPreparationTypeExists<TTransactionPreparation>()
+        protected bool IsSpecificTransactionPreparationTypeExists<TTransactionPreparation>()
             where TTransactionPreparation : global::Eventual2PC.ITransactionPreparation
         {
-            return _transactionPreparations == null || _transactionPreparations.Values.Any(a => a.GetType().TypeHandle == typeof(TTransactionPreparation));
+            return _transactionPreparations != null && _transactionPreparations.Values.Any(a => a.GetType() == typeof(TTransactionPreparation));
         }
     }
 }
