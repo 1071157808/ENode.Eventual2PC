@@ -1,4 +1,5 @@
 ﻿using ENode.Domain;
+using Eventual2PC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,12 @@ namespace ENode.Eventual2PC
     /// <summary>
     /// 事务参与方
     /// </summary>
-    /// <typeparam name="TAggregateRootId"></typeparam>
+    /// <typeparam name="TAggregateRootId">聚合根ID类型</typeparam>
     [Serializable]
     public abstract class TransactionParticipantBase<TAggregateRootId>
         : AggregateRoot<TAggregateRootId>, ITransactionParticipant
     {
-        private IDictionary<string, global::Eventual2PC.ITransactionPreparation> _transactionPreparations;
+        private IDictionary<string, ITransactionPreparation> _transactionPreparations;
 
         /// <summary>
         /// 事务参与方
@@ -45,7 +46,7 @@ namespace ENode.Eventual2PC
         /// 预提交
         /// </summary>
         /// <param name="transactionPreparation">事务准备</param>
-        public void PreCommit(global::Eventual2PC.ITransactionPreparation transactionPreparation)
+        public void PreCommit(ITransactionPreparation transactionPreparation)
         {
             if (transactionPreparation == null)
             {
@@ -53,7 +54,7 @@ namespace ENode.Eventual2PC
             }
             if (SupportedTransactionParticipantTypes == null || !SupportedTransactionParticipantTypes.Contains(transactionPreparation.GetType()))
             {
-                throw new global::Eventual2PC.UnknownTransactionPreparationException($"Unknown transaction preparation {transactionPreparation.GetType().Name} for aggregate root {this.GetType().Name}, id={Id}.");
+                throw new ApplicationException($"Unknown transaction preparation {transactionPreparation.GetType().Name} for aggregate root {this.GetType().Name}, id={Id}.");
             }
             InternalPreCommit(transactionPreparation);
         }
@@ -62,7 +63,7 @@ namespace ENode.Eventual2PC
         /// 预提交
         /// </summary>
         /// <param name="transactionPreparation">事务准备</param>
-        protected abstract void InternalPreCommit(global::Eventual2PC.ITransactionPreparation transactionPreparation);
+        protected abstract void InternalPreCommit(ITransactionPreparation transactionPreparation);
 
         /// <summary>
         /// 提交
@@ -80,11 +81,11 @@ namespace ENode.Eventual2PC
         /// 添加事务准备
         /// </summary>
         /// <param name="transactionPreparation">事务准备</param>
-        protected void AddTransactionPreparation(global::Eventual2PC.ITransactionPreparation transactionPreparation)
+        protected void AddTransactionPreparation(ITransactionPreparation transactionPreparation)
         {
             if (_transactionPreparations == null)
             {
-                _transactionPreparations = new Dictionary<string, global::Eventual2PC.ITransactionPreparation>();
+                _transactionPreparations = new Dictionary<string, ITransactionPreparation>();
             }
             _transactionPreparations.Add(transactionPreparation.TransactionId, transactionPreparation);
         }
@@ -94,7 +95,7 @@ namespace ENode.Eventual2PC
         /// </summary>
         /// <param name="transactionId">事务ID</param>
         /// <returns></returns>
-        protected global::Eventual2PC.ITransactionPreparation GetTransactionPreparation(string transactionId)
+        protected ITransactionPreparation GetTransactionPreparation(string transactionId)
         {
             return _transactionPreparations != null && _transactionPreparations.ContainsKey(transactionId) ? _transactionPreparations[transactionId] : null;
         }
@@ -105,7 +106,7 @@ namespace ENode.Eventual2PC
         /// <typeparam name="TTransactionPreparation">具体的事务准备</typeparam>
         /// <returns></returns>
         protected IReadOnlyList<TTransactionPreparation> GetTransactionPreparationList<TTransactionPreparation>()
-            where TTransactionPreparation : class, global::Eventual2PC.ITransactionPreparation
+            where TTransactionPreparation : class, ITransactionPreparation
         {
             return _transactionPreparations == null ? new List<TTransactionPreparation>().AsReadOnly() : _transactionPreparations.Values.Select(s => s as TTransactionPreparation).Where(w => w != null).ToList().AsReadOnly();
         }
@@ -114,9 +115,9 @@ namespace ENode.Eventual2PC
         /// 获取所有事务准备
         /// </summary>
         /// <returns></returns>
-        protected IReadOnlyList<global::Eventual2PC.ITransactionPreparation> GetAllTransactionPreparations()
+        protected IReadOnlyList<ITransactionPreparation> GetAllTransactionPreparations()
         {
-            return _transactionPreparations == null ? new List<global::Eventual2PC.ITransactionPreparation>().AsReadOnly() : _transactionPreparations.Values.ToList().AsReadOnly();
+            return _transactionPreparations == null ? new List<ITransactionPreparation>().AsReadOnly() : _transactionPreparations.Values.ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -137,7 +138,7 @@ namespace ENode.Eventual2PC
         /// <typeparam name="TTransactionPreparation">具体的事务准备</typeparam>
         /// <returns></returns>
         protected bool IsSpecificTransactionPreparationTypeExists<TTransactionPreparation>()
-            where TTransactionPreparation : global::Eventual2PC.ITransactionPreparation
+            where TTransactionPreparation : ITransactionPreparation
         {
             return _transactionPreparations != null && _transactionPreparations.Values.Any(a => a.GetType() == typeof(TTransactionPreparation));
         }

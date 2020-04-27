@@ -28,6 +28,14 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.1.0
+
+- 1）`TransactionInitiatorBase` 添加校验逻辑，以符合 `Eventual2PC` 中的规约描述
+
+- 2）新增 `TransactionInitiatorAlsoActAsOtherParticipantBase`，以满足一个聚合根实例既是事务A的 `Initiator`， 又是事务B的 `Participant` 的场景
+
+- 3）小重构，将事件接口替换为抽象类，目的是为了减少使用方的编码量
+
 ## 1.0.5
 
 - 1）修复 `TransactionInitiatorBase`、 `TransactionParticipantBase`内部处理
