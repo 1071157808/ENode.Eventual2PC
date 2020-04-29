@@ -28,6 +28,12 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.1.1
+
+- 1）修复`Initiator` 在执行 `AddPreCommitFailedParticipant` 时，如果所有预提交已添加且都失败，将无法触发事件 `TransactionCompleted` 
+
+- 2）将类 `TransactionInitiatorAlsoActAsOtherParticipantBase` 继承自 `TransactionInitiatorBase` 来简化代码
+
 ## 1.1.0
 
 - 1）`TransactionInitiatorBase` 添加校验逻辑，以符合 `Eventual2PC` 中的规约描述

@@ -17,8 +17,6 @@ namespace ENode.Eventual2PC
         : AggregateRoot<TAggregateRootId>, ITransactionInitiator
         where TTransactionInitiator : TransactionInitiatorBase<TTransactionInitiator, TAggregateRootId>
     {
-        private string _transactionId;
-        private byte _transactionType;
         private List<TransactionParticipantInfo> _allTransactionParticipants;
         private List<TransactionParticipantInfo> _preCommitSuccessTransactionParticipants;
         private List<TransactionParticipantInfo> _preCommitFailTransactionParticipants;
@@ -49,14 +47,17 @@ namespace ENode.Eventual2PC
         /// <summary>
         /// 是否事务处理中
         /// </summary>
-        /// <returns></returns>
-        public bool IsTransactionProcessing
-        {
-            get
-            {
-                return _transactionType != 0;
-            }
-        }
+        public bool IsTransactionProcessing { get; private set; }
+
+        /// <summary>
+        /// 当前事务ID
+        /// </summary>
+        public string CurrentTransactionId { get; private set; }
+
+        /// <summary>
+        /// 当前事务类型
+        /// </summary>
+        public byte CurrentTransactionType { get; private set; }
 
         /// <summary>
         /// 是否所有预提交参与者都已添加且都成功
@@ -65,6 +66,15 @@ namespace ENode.Eventual2PC
         protected bool IsAllPreCommitParticipantAddedAndSuccess()
         {
             return _allTransactionParticipants.Count == _preCommitSuccessTransactionParticipants.Count;
+        }
+
+        /// <summary>
+        /// 是否所有预提交参与者都已添加且都失败
+        /// </summary>
+        /// <returns></returns>
+        protected bool IsAllPreCommitParticipantAddedAndFail()
+        {
+            return _allTransactionParticipants.Count == _preCommitFailTransactionParticipants.Count;
         }
 
         /// <summary>
@@ -102,21 +112,17 @@ namespace ENode.Eventual2PC
             {
                 throw new ArgumentNullException(nameof(transactionId));
             }
-            if (transactionType == 0)
-            {
-                throw new ArgumentNullException(nameof(transactionType));
-            }
-            if (_transactionType == 0)
+            if (!IsTransactionProcessing)
             {
                 throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddPreCommitSuccessParticipant command.");
             }
-            if (transactionType != _transactionType)
+            if (transactionType != CurrentTransactionType)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {CurrentTransactionType}");
             }
-            if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
+            if (!string.IsNullOrEmpty(CurrentTransactionId) && transactionId != CurrentTransactionId)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {CurrentTransactionId}");
             }
             if (_preCommitSuccessTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitSuccessTransactionParticipants))
             {
@@ -159,21 +165,17 @@ namespace ENode.Eventual2PC
             {
                 throw new ArgumentNullException(nameof(transactionId));
             }
-            if (transactionType == 0)
-            {
-                throw new ArgumentNullException(nameof(transactionType));
-            }
-            if (_transactionType == 0)
+            if (!IsTransactionProcessing)
             {
                 throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddPreCommitFailedParticipant command.");
             }
-            if (transactionType != _transactionType)
+            if (transactionType != CurrentTransactionType)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {CurrentTransactionType}");
             }
-            if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
+            if (!string.IsNullOrEmpty(CurrentTransactionId) && transactionId != CurrentTransactionId)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {CurrentTransactionId}");
             }
             if (_preCommitSuccessTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_preCommitSuccessTransactionParticipants))
             {
@@ -187,12 +189,17 @@ namespace ENode.Eventual2PC
             {
                 return;
             }
-            
+
             ApplyEvent(CreatePreCommitFailParticipantAddedEvent(transactionId, transactionType, participantInfo));
             if (IsAllPreCommitParticipantAdded())
             {
                 // 所有预提交已添加
                 ApplyEvent(CreateAnyParticipantPreCommitFailedEvent(transactionId, transactionType, _preCommitSuccessTransactionParticipants));
+                if (IsAllPreCommitParticipantAddedAndFail())
+                {
+                    // 所有预提交已添加且都失败，事务直接完成
+                    ApplyEvent(CreateTransactionCompletedEvent(transactionId, transactionType, false));
+                }
             }
         }
 
@@ -212,21 +219,17 @@ namespace ENode.Eventual2PC
             {
                 throw new ArgumentNullException(nameof(transactionId));
             }
-            if (transactionType == 0)
-            {
-                throw new ArgumentNullException(nameof(transactionType));
-            }
-            if (_transactionType == 0)
+            if (!IsTransactionProcessing)
             {
                 throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddCommittedParticipant command.");
             }
-            if (transactionType != _transactionType)
+            if (transactionType != CurrentTransactionType)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {CurrentTransactionType}");
             }
-            if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
+            if (!string.IsNullOrEmpty(CurrentTransactionId) && transactionId != CurrentTransactionId)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {CurrentTransactionId}");
             }
             if (_committedTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_committedTransactionParticipants))
             {
@@ -269,21 +272,17 @@ namespace ENode.Eventual2PC
             {
                 throw new ArgumentNullException(nameof(transactionId));
             }
-            if (transactionType == 0)
+            if (!IsTransactionProcessing)
             {
-                throw new ArgumentNullException(nameof(transactionType));
+                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddCommittedParticipant command.");
             }
-            if (_transactionType == 0)
+            if (transactionType != CurrentTransactionType)
             {
-                throw new ApplicationException($"Initiator {Id} is not in transaction, couldn't execute AddRolledbackParticipant command.");
+                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {CurrentTransactionType}");
             }
-            if (transactionType != _transactionType)
+            if (!string.IsNullOrEmpty(CurrentTransactionId) && transactionId != CurrentTransactionId)
             {
-                throw new ApplicationException($"Initiator {Id}'s transaction type {transactionType} is not same as {_transactionType}");
-            }
-            if (!string.IsNullOrEmpty(_transactionId) && transactionId != _transactionId)
-            {
-                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {_transactionId}");
+                throw new ApplicationException($"Initiator {Id}'s transaction id {transactionId} is not same as {CurrentTransactionId}");
             }
             if (_committedTransactionParticipants.Count > 0 && participantInfo.IsParticipantAlreadyExists(_committedTransactionParticipants))
             {
@@ -373,7 +372,8 @@ namespace ENode.Eventual2PC
         /// <param name="allTransactionParticipants"></param>
         protected void HandleTransactionStartedEvent(byte transactionType, IEnumerable<TransactionParticipantInfo> allTransactionParticipants)
         {
-            _transactionType = transactionType;
+            IsTransactionProcessing = true;
+            CurrentTransactionType = transactionType;
             _allTransactionParticipants = new List<TransactionParticipantInfo>();
             if (allTransactionParticipants == null || !allTransactionParticipants.Any())
             {
@@ -397,7 +397,7 @@ namespace ENode.Eventual2PC
         /// <param name="transactionParticipant">事务参与方信息</param>
         protected void HandlePreCommitSuccessParticipantAddedEvent(string transactionId, TransactionParticipantInfo transactionParticipant)
         {
-            _transactionId = transactionId;
+            CurrentTransactionId = transactionId;
             _preCommitSuccessTransactionParticipants.Add(transactionParticipant);
         }
 
@@ -408,7 +408,7 @@ namespace ENode.Eventual2PC
         /// <param name="transactionParticipant">事务参与方信息</param>
         protected void HandlePreCommitFailParticipantAddedEvent(string transactionId, TransactionParticipantInfo transactionParticipant)
         {
-            _transactionId = transactionId;
+            CurrentTransactionId = transactionId;
             _preCommitFailTransactionParticipants.Add(transactionParticipant);
         }
 
@@ -435,8 +435,9 @@ namespace ENode.Eventual2PC
         /// </summary>
         protected void HandleTransactionCompletedEvent()
         {
-            _transactionType = 0;
-            _transactionId = string.Empty;
+            IsTransactionProcessing = false;
+            CurrentTransactionType = 0;
+            CurrentTransactionId = string.Empty;
             _allTransactionParticipants.Clear();
             _preCommitSuccessTransactionParticipants.Clear();
             _preCommitFailTransactionParticipants.Clear();
