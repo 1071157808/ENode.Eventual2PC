@@ -10,22 +10,21 @@
     <RepositoryUrl>https://github.com/berkaroad/ENode.Eventual2PC</RepositoryUrl>
     <Authors>Jerry Bai</Authors>
     <PackageId>ENode.Eventual2PC</PackageId>
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
     <Title>ENode.Eventual2PC</Title>
     <PackageIcon>_content\package.png</PackageIcon>
     <IncludeContentInPack>true</IncludeContentInPack>
     <ContentTargetFolders>_content</ContentTargetFolders>
     <Description>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Description>
     <Summary>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Summary>
-    <PackageTags>enode 2pc eventual transaction processmanager saga cqrs</PackageTags>
-    <PackageReleaseNotes>1）修复`Initiator` 在执行 `AddPreCommitFailedParticipant` 时，如果所有预提交已添加且都失败，将无法触发事件 `TransactionCompleted` 
-2）将类 `TransactionInitiatorAlsoActAsOtherParticipantBase` 继承自 `TransactionInitiatorBase` 来简化代码
+    <PackageTags>enode 2pc tcc eventual transaction processmanager saga cqrs</PackageTags>
+    <PackageReleaseNotes>实现 Eventual2PC 1.1版本的Command接口
     </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ENode" Version="2.9.6" />
-    <PackageReference Include="Eventual2PC" Version="1.0.2" />
+    <PackageReference Include="Eventual2PC" Version="1.1.0" />
   </ItemGroup>
 
   <ItemGroup>

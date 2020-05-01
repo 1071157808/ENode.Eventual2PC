@@ -28,6 +28,10 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.2.0
+
+- 实现 Eventual2PC 1.1版本的Command接口
+
 ## 1.1.1
 
 - 1）修复`Initiator` 在执行 `AddPreCommitFailedParticipant` 时，如果所有预提交已添加且都失败，将无法触发事件 `TransactionCompleted` 
