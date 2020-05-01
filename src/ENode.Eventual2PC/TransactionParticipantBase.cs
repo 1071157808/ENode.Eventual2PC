@@ -10,7 +10,6 @@ namespace ENode.Eventual2PC
     /// 事务参与方
     /// </summary>
     /// <typeparam name="TAggregateRootId">聚合根ID类型</typeparam>
-    [Serializable]
     public abstract class TransactionParticipantBase<TAggregateRootId>
         : AggregateRoot<TAggregateRootId>, ITransactionParticipant
     {

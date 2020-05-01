@@ -10,7 +10,6 @@ namespace ENode.Eventual2PC
     /// </summary>
     /// <typeparam name="TTransactionInitiator">事务发起方实现类</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根ID类型</typeparam>
-    [Serializable]
     public abstract class TransactionInitiatorAlsoActAsOtherParticipantBase<TTransactionInitiator, TAggregateRootId>
         : TransactionInitiatorBase<TTransactionInitiator, TAggregateRootId>, ITransactionInitiator
         , ITransactionParticipant

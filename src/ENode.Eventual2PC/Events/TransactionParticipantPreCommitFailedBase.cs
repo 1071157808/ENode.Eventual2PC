@@ -2,7 +2,6 @@
 using ENode.Eventing;
 using Eventual2PC;
 using Eventual2PC.Events;
-using System;
 
 namespace ENode.Eventual2PC.Events
 {
@@ -11,7 +10,6 @@ namespace ENode.Eventual2PC.Events
     /// </summary>
     /// <typeparam name="TParticipant">事务参与方</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根ID</typeparam>
-    [Serializable]
     public abstract class TransactionParticipantPreCommitFailedBase<TParticipant, TAggregateRootId>
         : DomainEvent<TAggregateRootId>
         , ITransactionParticipantPreCommitFailed<TParticipant>
