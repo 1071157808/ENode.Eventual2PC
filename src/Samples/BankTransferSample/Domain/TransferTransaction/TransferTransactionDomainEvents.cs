@@ -17,7 +17,8 @@ namespace BankTransferSample.Domain
         }
     }
 
-    /// <summary>转账交易已开始
+    /// <summary>
+    /// 转账交易已开始
     /// </summary>
     public class TransferTransactionStartedEvent : ENode.Eventual2PC.Events.TransactionInitiatorTransactionStartedBase<TransferTransaction, string>
     {

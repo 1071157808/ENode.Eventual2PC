@@ -1,4 +1,5 @@
-﻿using Eventual2PC;
+﻿using ENode.Eventual2PC.Exceptions;
+using Eventual2PC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,7 +60,7 @@ namespace ENode.Eventual2PC
             }
             if (IsTransactionProcessing)
             {
-                throw new ApplicationException($"Participant {Id} is already start transaction [{CurrentTransactionType}], cann't execute PreCommit command.");
+                throw new AlreadyStartTransactionWhenPreCommitDomainException<TTransactionInitiator, TAggregateRootId>(transactionPreparation.GetType().FullName, transactionPreparation.GetTransactionPreparationInfo());
             }
             InternalPreCommit(transactionPreparation);
         }
@@ -147,5 +148,5 @@ namespace ENode.Eventual2PC
         {
             return _transactionPreparations != null && _transactionPreparations.Values.Any(a => a.GetType() == typeof(TTransactionPreparation));
         }
-   }
+    }
 }

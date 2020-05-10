@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 namespace BankTransferSample.Domain
 {
-    /// <summary>聚合根，表示一笔银行内账户之间的转账交易
+    /// <summary>
+    /// 转账交易
     /// </summary>
     public class TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<TransferTransaction,string>
     {
@@ -21,7 +22,8 @@ namespace BankTransferSample.Domain
 
         #region Constructors
 
-        /// <summary>构造函数
+        /// <summary>
+        /// 转账交易
         /// </summary>
         public TransferTransaction(string transactionId, TransferTransactionInfo transactionInfo)
             : base(transactionId)

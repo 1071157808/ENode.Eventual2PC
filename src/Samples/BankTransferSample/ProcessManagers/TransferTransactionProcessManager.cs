@@ -9,7 +9,8 @@ using ENode.Messaging;
 
 namespace BankTransferSample.ProcessManagers
 {
-    /// <summary>银行转账交易流程管理器，用于协调银行转账交易流程中各个参与者聚合根之间的消息交互。
+    /// <summary>
+    /// 银行转账交易流程管理器，用于协调银行转账交易流程中各个参与者聚合根之间的消息交互。
     /// </summary>
     public class TransferTransactionProcessManager :
         IMessageHandler<TransferTransactionStartedEvent>,                  //转账交易已开始
@@ -48,6 +49,7 @@ namespace BankTransferSample.ProcessManagers
             { Id = evnt.Id, Items = evnt.Items });
             await Task.WhenAll(task1, task2).ConfigureAwait(false);
         }
+        
         public async Task HandleAsync(AccountValidatePassedMessage message)
         {
             if (message.TransactionType == (byte)TransactionTypes.TransferTransaction)
@@ -82,6 +84,7 @@ namespace BankTransferSample.ProcessManagers
                 }
             }
         }
+
         public async Task HandleAsync(AccountValidateFailedMessage message)
         {
             if (message.TransactionType == (byte)TransactionTypes.TransferTransaction)
@@ -98,6 +101,7 @@ namespace BankTransferSample.ProcessManagers
                 });
             }
         }
+
         public async Task HandleAsync(WithdrawTransactionPreCommitSucceedEvent evnt)
         {
             if (evnt.TransactionPreparation.TransactionType == (byte)TransactionTypes.TransferTransaction)
@@ -176,7 +180,6 @@ namespace BankTransferSample.ProcessManagers
             }
             await Task.WhenAll(taskList);
         }
-
 
         public async Task HandleAsync(WithdrawTransactionCommittedEvent evnt)
         {

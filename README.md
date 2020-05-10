@@ -28,6 +28,10 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.2.1
+
+- 1）TransactionInitiatorAlsoActAsOtherParticipantBase 在PreCommit如果已经发起事务，将发布AlreadyStartTransactionWhenPreCommitDomainException 领域异常（原是ApplicationException，不合理，因为这个属于业务操作产生，非程序bug）
+
 ## 1.2.0
 
 - 实现 Eventual2PC 1.1版本的Command接口

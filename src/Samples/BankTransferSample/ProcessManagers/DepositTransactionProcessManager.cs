@@ -7,7 +7,8 @@ using ENode.Messaging;
 
 namespace BankTransferSample.ProcessManagers
 {
-    /// <summary>银行存款交易流程管理器，用于协调银行存款交易流程中各个参与者聚合根之间的消息交互。
+    /// <summary>
+    /// 银行存款交易流程管理器，用于协调银行存款交易流程中各个参与者聚合根之间的消息交互。
     /// </summary>
     public class DepositTransactionProcessManager :
         IMessageHandler<DepositTransactionStartedEvent>,                    //存款交易已开始
@@ -36,6 +37,7 @@ namespace BankTransferSample.ProcessManagers
                 Amount = evnt.Amount
             });
         }
+
         public async Task HandleAsync(DepositTransactionPreCommitSucceedEvent evnt)
         {
             if (evnt.TransactionPreparation.TransactionType == (byte)TransactionTypes.DepositTransaction)
@@ -52,6 +54,7 @@ namespace BankTransferSample.ProcessManagers
                 });
             }
         }
+        
         public async Task HandleAsync(DepositTransactionAllParticipantPreCommitSucceedEvent evnt)
         {
             await _commandService.SendAsync(new CommitTransactionPreparationCommand(evnt.TransactionParticipants.First().ParticipantId, evnt.AggregateRootId) { Id = evnt.Id, Items = evnt.Items });

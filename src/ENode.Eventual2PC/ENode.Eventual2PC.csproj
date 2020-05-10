@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/berkaroad/ENode.Eventual2PC</RepositoryUrl>
     <Authors>Jerry Bai</Authors>
     <PackageId>ENode.Eventual2PC</PackageId>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <Title>ENode.Eventual2PC</Title>
     <PackageIcon>_content\package.png</PackageIcon>
     <IncludeContentInPack>true</IncludeContentInPack>
@@ -18,7 +18,7 @@
     <Description>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Description>
     <Summary>基于Eventual2PC的最终一致性二阶段提交实现，用于ENode。</Summary>
     <PackageTags>enode 2pc tcc eventual transaction processmanager saga cqrs</PackageTags>
-    <PackageReleaseNotes>实现 Eventual2PC 1.1版本的Command接口
+    <PackageReleaseNotes>1）TransactionInitiatorAlsoActAsOtherParticipantBase 在PreCommit如果已经发起事务，将发布AlreadyStartTransactionWhenPreCommitDomainException 领域异常（原是ApplicationException，不合理，因为这个属于业务操作产生，非程序bug）
     </PackageReleaseNotes>
   </PropertyGroup>
 
