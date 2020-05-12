@@ -1,3 +1,4 @@
+using System;
 using ENode.Commanding;
 using Eventual2PC.Commands;
 
@@ -6,6 +7,7 @@ namespace ENode.Eventual2PC.Commands
     /// <summary>
     /// 事务发起方添加预提交失败的参与方
     /// </summary>
+    [Serializable]
     public abstract class TransactionInitiatorAddPreCommitFailedParticipantCommandBase<TAggregateRootId>
         : Command<TAggregateRootId>, ITransactionInitiatorAddPreCommitFailedParticipantCommand
     {

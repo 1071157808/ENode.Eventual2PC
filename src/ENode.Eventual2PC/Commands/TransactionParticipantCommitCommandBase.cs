@@ -1,3 +1,4 @@
+using System;
 using ENode.Commanding;
 using Eventual2PC.Commands;
 
@@ -6,6 +7,7 @@ namespace ENode.Eventual2PC.Commands
     /// <summary>
     /// 事务参与方提交命令
     /// </summary>
+    [Serializable]
     public abstract class TransactionParticipantCommitCommandBase<TAggregateRootId>
         : Command<TAggregateRootId>, ITransactionParticipantCommitCommand
     {

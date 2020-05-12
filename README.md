@@ -28,6 +28,12 @@ public TransferTransaction : ENode.Eventual2PC.TransactionInitiatorBase<Transfer
 
 ## 发布历史
 
+## 1.2.2
+
+- 1）抽象类标记为可序列号；
+
+- 2）TransactionInitiatorAlsoActAsOtherParticipantBase 添加虚属性 PreventPreCommitOrNotIfTransactionProcessing
+
 ## 1.2.1
 
 - 1）TransactionInitiatorAlsoActAsOtherParticipantBase 在PreCommit如果已经发起事务，将发布AlreadyStartTransactionWhenPreCommitDomainException 领域异常（原是ApplicationException，不合理，因为这个属于业务操作产生，非程序bug）

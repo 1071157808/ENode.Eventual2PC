@@ -1,4 +1,5 @@
-﻿using ENode.Domain;
+﻿using System;
+using ENode.Domain;
 using ENode.Eventing;
 using Eventual2PC;
 using Eventual2PC.Events;
@@ -10,6 +11,7 @@ namespace ENode.Eventual2PC.Events
     /// </summary>
     /// <typeparam name="TInitiator">事务发起方</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根ID</typeparam>
+    [Serializable]
     public abstract class TransactionInitiatorCommittedParticipantAddedBase<TInitiator, TAggregateRootId>
         : DomainEvent<TAggregateRootId>
         , ITransactionInitiatorCommittedParticipantAdded<TInitiator>

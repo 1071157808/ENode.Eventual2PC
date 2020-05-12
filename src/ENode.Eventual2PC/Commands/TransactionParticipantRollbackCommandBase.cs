@@ -1,3 +1,4 @@
+using System;
 using ENode.Commanding;
 using Eventual2PC.Commands;
 
@@ -6,6 +7,7 @@ namespace ENode.Eventual2PC.Commands
     /// <summary>
     /// 事务参与方回滚命令
     /// </summary>
+    [Serializable]
     public abstract class TransactionParticipantRollbackCommandBase<TAggregateRootId>
         : Command<TAggregateRootId>, ITransactionParticipantRollbackCommand
     {

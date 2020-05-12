@@ -11,12 +11,13 @@ namespace ENode.Eventual2PC
     /// </summary>
     /// <typeparam name="TTransactionInitiator">事务发起方实现类</typeparam>
     /// <typeparam name="TAggregateRootId">聚合根ID类型</typeparam>
+    [Serializable]
     public abstract class TransactionInitiatorAlsoActAsOtherParticipantBase<TTransactionInitiator, TAggregateRootId>
         : TransactionInitiatorBase<TTransactionInitiator, TAggregateRootId>, ITransactionInitiator
         , ITransactionParticipant
         where TTransactionInitiator : TransactionInitiatorAlsoActAsOtherParticipantBase<TTransactionInitiator, TAggregateRootId>
     {
-        private IDictionary<string, ITransactionPreparation> _transactionPreparations;
+        private Dictionary<string, ITransactionPreparation> _transactionPreparations;
 
         /// <summary>
         /// 事务发起方兼其他事务参与方
@@ -45,6 +46,11 @@ namespace ENode.Eventual2PC
         protected abstract IEnumerable<Type> SupportedTransactionParticipantTypes { get; }
 
         /// <summary>
+        /// 如果事务在处理中，是否阻止预提交（默认阻止）
+        /// </summary>
+        protected virtual bool PreventPreCommitOrNotIfTransactionProcessing => true;
+
+        /// <summary>
         /// 预提交
         /// </summary>
         /// <param name="transactionPreparation">事务准备</param>
@@ -58,7 +64,7 @@ namespace ENode.Eventual2PC
             {
                 throw new ApplicationException($"Unknown transaction preparation {transactionPreparation.GetType().Name} for aggregate root {this.GetType().Name}, id={Id}.");
             }
-            if (IsTransactionProcessing)
+            if (PreventPreCommitOrNotIfTransactionProcessing && IsTransactionProcessing)
             {
                 throw new AlreadyStartTransactionWhenPreCommitDomainException<TTransactionInitiator, TAggregateRootId>(transactionPreparation.GetType().FullName, transactionPreparation.GetTransactionPreparationInfo());
             }

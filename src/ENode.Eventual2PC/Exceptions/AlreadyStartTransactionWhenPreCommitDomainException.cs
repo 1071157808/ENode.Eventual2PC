@@ -1,3 +1,4 @@
+using System;
 using ENode.Domain;
 using Eventual2PC;
 
@@ -8,6 +9,7 @@ namespace ENode.Eventual2PC.Exceptions
     /// </summary>
     /// <typeparam name="TParticipant"></typeparam>
     /// <typeparam name="TAggregateRootId"></typeparam>
+    [Serializable]
     public class AlreadyStartTransactionWhenPreCommitDomainException<TParticipant, TAggregateRootId>
         : TransactionDomainExceptionBase<TParticipant, TAggregateRootId>
         where TParticipant : AggregateRoot<TAggregateRootId>, ITransactionParticipant
